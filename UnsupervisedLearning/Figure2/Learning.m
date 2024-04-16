@@ -209,51 +209,51 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-figure
-set(gcf,'Units','centimeters')
-xSize = 24;  ySize =34;
-xLeft = (21-xSize)/4; yTop = (30-ySize)/4;
-set(gcf,'Position',[xLeft yTop xSize ySize]); %centers on A4 paper
-set(gcf, 'Color', 'w');
-
-lines=3;
-fsize=11; 
-
-%plotting the error
-h=subplot(lines,1,1);
-ax=get(h,'Position');
-loglog((2.^(1:T(1,1)))*dt,Error,'k');
-set(gca,'FontSize',fsize,'FontName','Helvetica')
-set(gca,'TickDir','out')
-xlabel('time')
-ylabel('Decoding Error')
-title('Evolution of the Decoding Error Through Learning')
-set(gca,'ticklength',[0.01 0.01]/ax(3))
-box off
-
-%plotting the mean rate
-h=subplot(lines,1,2);
-ax=get(h,'Position');
-loglog((2.^(1:T(1,1)))*dt,MeanPrate,'k');
-set(gca,'FontSize',fsize,'FontName','Helvetica')
-set(gca,'TickDir','out')
-xlabel('time')
-ylabel('Mean Rate per neuron')
-title('Evolution of the Mean Population Firing Rate Through Learning ')
-set(gca,'ticklength',[0.01 0.01]/ax(3))
-box off
-
-%plotting the mean membrane variance
-h=subplot(lines,1,3);
-ax=get(h,'Position');
-loglog((2.^(1:T(1,1)))*dt,MembraneVar,'k');
-set(gca,'FontSize',fsize,'FontName','Helvetica')
-set(gca,'TickDir','out')
-xlabel('time')
-ylabel('Voltage Variance per Neuron')
-title('Evolution of the Variance of the Membrane Potential ')
-set(gca,'ticklength',[0.01 0.01]/ax(3))
-box off
+% figure
+% set(gcf,'Units','centimeters')
+% xSize = 24;  ySize =34;
+% xLeft = (21-xSize)/4; yTop = (30-ySize)/4;
+% set(gcf,'Position',[xLeft yTop xSize ySize]); %centers on A4 paper
+% set(gcf, 'Color', 'w');
+% 
+% lines=3;
+% fsize=11; 
+% 
+% %plotting the error
+% h=subplot(lines,1,1);
+% ax=get(h,'Position');
+% loglog((2.^(1:T(1,1)))*dt,Error,'k');
+% set(gca,'FontSize',fsize,'FontName','Helvetica')
+% set(gca,'TickDir','out')
+% xlabel('time')
+% ylabel('Decoding Error')
+% title('Evolution of the Decoding Error Through Learning')
+% set(gca,'ticklength',[0.01 0.01]/ax(3))
+% box off
+% 
+% %plotting the mean rate
+% h=subplot(lines,1,2);
+% ax=get(h,'Position');
+% loglog((2.^(1:T(1,1)))*dt,MeanPrate,'k');
+% set(gca,'FontSize',fsize,'FontName','Helvetica')
+% set(gca,'TickDir','out')
+% xlabel('time')
+% ylabel('Mean Rate per neuron')
+% title('Evolution of the Mean Population Firing Rate Through Learning ')
+% set(gca,'ticklength',[0.01 0.01]/ax(3))
+% box off
+% 
+% %plotting the mean membrane variance
+% h=subplot(lines,1,3);
+% ax=get(h,'Position');
+% loglog((2.^(1:T(1,1)))*dt,MembraneVar,'k');
+% set(gca,'FontSize',fsize,'FontName','Helvetica')
+% set(gca,'TickDir','out')
+% xlabel('time')
+% ylabel('Voltage Variance per Neuron')
+% title('Evolution of the Variance of the Membrane Potential ')
+% set(gca,'ticklength',[0.01 0.01]/ax(3))
+% box off
 
 
 
@@ -293,120 +293,120 @@ end
 
 
 
-figure
-
-set(gcf,'Units','centimeters')
-xSize = 24;  ySize =34;
-xLeft = (21-xSize)/4; yTop = (30-ySize)/4;
-set(gcf,'Position',[xLeft yTop xSize ySize]); %centers on A4 paper
-set(gcf, 'Color', 'w');
-
-
-
-lines=4;
-fsize=11; 
-
-
-%Plotting the evolution of distance between the recurrent weights and FF^T through learning
-h=subplot(lines,2,[1 2]);
-ax=get(h,'Position');
-loglog((2.^(1:T))*dt,ErrorC,'k');
-set(gca,'FontSize',fsize,'FontName','Helvetica')
-set(gca,'TickDir','out')
-xlabel('time')
-ylabel('Distance to optimal weights')
-title('Weight Convergence')
-set(gca,'ticklength',[0.01 0.01]/ax(3))
-
-%ploting the feedforward weighs in a 2D plane before learning
-h=subplot(lines,2,3);
-ax=get(h,'Position');
-Fi=squeeze(Fs(1,:,:)); 
-plot(Fi(1,:),Fi(2,:),'.k');
-hold on
-plot(0,0,'+');
-set(gca,'FontSize',fsize,'FontName','Helvetica')
-set(gca,'TickDir','out')
-set(gca,'ticklength',[0.01 0.01]/ax(3))
-axis([-1, 1 -1 1]);
-xlabel('FF Weights Component 1')
-ylabel('FF Weights Component 2')
-title('Before Learning')
-axis square
-
-%ploting the feedforward weighs in a 2D plane After learning
-h=subplot(lines,2,4);
-ax=get(h,'Position');
-plot(F(1,:),F(2,:),'.k');
-hold on
-plot(0,0,'+');
-set(gca,'FontSize',fsize,'FontName','Helvetica')
-set(gca,'TickDir','out')
-set(gca,'ticklength',[0.01 0.01]/ax(3))
-axis([-1, 1 -1 1]);
-xlabel('FF Weights Component 1')
-ylabel('FF Weights Component 2')
-title('After Learning')
-axis square
-
-%scatter plot of C and FF^T before learning
-h=subplot(lines,2,5);
-ax=get(h,'Position');
-Ci=squeeze(Cs(1,:,:)); 
-plot(Ci,-Fi'*Fi,'.k');
-hold on
-plot(0,0,'+');
-set(gca,'FontSize',fsize,'FontName','Helvetica')
-set(gca,'TickDir','out')
-set(gca,'ticklength',[0.01 0.01]/ax(3))
-axis([-1, 1 -1 1]);
-xlabel('FF^T')
-ylabel('Learned Rec Weights')
-axis square
-
-
-%scatter plot of C and FF^T After learning
-h=subplot(lines,2,6);
-ax=get(h,'Position');
-plot(C,-F'*F,'.k');
-hold on
-plot(0,0,'+');
-set(gca,'FontSize',fsize,'FontName','Helvetica')
-set(gca,'TickDir','out')
-set(gca,'ticklength',[0.01 0.01]/ax(3))
-axis([-1, 1 -1 1]);
-xlabel('FF^T')
-ylabel('Learned Rec Weights')
-axis square
-
-%scatter plot of optimal decoder and F^T before learning
-h=subplot(lines,2,7);
-ax=get(h,'Position');
-plot(squeeze(Decs(1,:,:)),Fi,'.k');
-hold on
-plot(0,0,'+');
-set(gca,'FontSize',fsize,'FontName','Helvetica')
-set(gca,'TickDir','out')
-set(gca,'ticklength',[0.01 0.01]/ax(3))
-axis([-1, 1 -1 1]);
-xlabel('Optimal decoder')
-ylabel('F^T')
-axis square
-
-%scatter plot of optimal decoder and F^T After learning
-h=subplot(lines,2,8);
-plot(squeeze(Decs(T,:,:)),F,'.k');
-hold on
-plot(0,0,'+');
-set(gca,'FontSize',fsize,'FontName','Helvetica')
-set(gca,'TickDir','out')
-set(gca,'ticklength',[0.01 0.01]/ax(3))
-axis([-1, 1 -1 1]);
-xlabel('Optimal decoder')
-ylabel('F^T')
-axis square
-
-end
+% figure
+% 
+% set(gcf,'Units','centimeters')
+% xSize = 24;  ySize =34;
+% xLeft = (21-xSize)/4; yTop = (30-ySize)/4;
+% set(gcf,'Position',[xLeft yTop xSize ySize]); %centers on A4 paper
+% set(gcf, 'Color', 'w');
+% 
+% 
+% 
+% lines=4;
+% fsize=11; 
+% 
+% 
+% %Plotting the evolution of distance between the recurrent weights and FF^T through learning
+% h=subplot(lines,2,[1 2]);
+% ax=get(h,'Position');
+% loglog((2.^(1:T))*dt,ErrorC,'k');
+% set(gca,'FontSize',fsize,'FontName','Helvetica')
+% set(gca,'TickDir','out')
+% xlabel('time')
+% ylabel('Distance to optimal weights')
+% title('Weight Convergence')
+% set(gca,'ticklength',[0.01 0.01]/ax(3))
+% 
+% %ploting the feedforward weighs in a 2D plane before learning
+% h=subplot(lines,2,3);
+% ax=get(h,'Position');
+% Fi=squeeze(Fs(1,:,:)); 
+% plot(Fi(1,:),Fi(2,:),'.k');
+% hold on
+% plot(0,0,'+');
+% set(gca,'FontSize',fsize,'FontName','Helvetica')
+% set(gca,'TickDir','out')
+% set(gca,'ticklength',[0.01 0.01]/ax(3))
+% axis([-1, 1 -1 1]);
+% xlabel('FF Weights Component 1')
+% ylabel('FF Weights Component 2')
+% title('Before Learning')
+% axis square
+% 
+% %ploting the feedforward weighs in a 2D plane After learning
+% h=subplot(lines,2,4);
+% ax=get(h,'Position');
+% plot(F(1,:),F(2,:),'.k');
+% hold on
+% plot(0,0,'+');
+% set(gca,'FontSize',fsize,'FontName','Helvetica')
+% set(gca,'TickDir','out')
+% set(gca,'ticklength',[0.01 0.01]/ax(3))
+% axis([-1, 1 -1 1]);
+% xlabel('FF Weights Component 1')
+% ylabel('FF Weights Component 2')
+% title('After Learning')
+% axis square
+% 
+% %scatter plot of C and FF^T before learning
+% h=subplot(lines,2,5);
+% ax=get(h,'Position');
+% Ci=squeeze(Cs(1,:,:)); 
+% plot(Ci,-Fi'*Fi,'.k');
+% hold on
+% plot(0,0,'+');
+% set(gca,'FontSize',fsize,'FontName','Helvetica')
+% set(gca,'TickDir','out')
+% set(gca,'ticklength',[0.01 0.01]/ax(3))
+% axis([-1, 1 -1 1]);
+% xlabel('FF^T')
+% ylabel('Learned Rec Weights')
+% axis square
+% 
+% 
+% %scatter plot of C and FF^T After learning
+% h=subplot(lines,2,6);
+% ax=get(h,'Position');
+% plot(C,-F'*F,'.k');
+% hold on
+% plot(0,0,'+');
+% set(gca,'FontSize',fsize,'FontName','Helvetica')
+% set(gca,'TickDir','out')
+% set(gca,'ticklength',[0.01 0.01]/ax(3))
+% axis([-1, 1 -1 1]);
+% xlabel('FF^T')
+% ylabel('Learned Rec Weights')
+% axis square
+% 
+% %scatter plot of optimal decoder and F^T before learning
+% h=subplot(lines,2,7);
+% ax=get(h,'Position');
+% plot(squeeze(Decs(1,:,:)),Fi,'.k');
+% hold on
+% plot(0,0,'+');
+% set(gca,'FontSize',fsize,'FontName','Helvetica')
+% set(gca,'TickDir','out')
+% set(gca,'ticklength',[0.01 0.01]/ax(3))
+% axis([-1, 1 -1 1]);
+% xlabel('Optimal decoder')
+% ylabel('F^T')
+% axis square
+% 
+% %scatter plot of optimal decoder and F^T After learning
+% h=subplot(lines,2,8);
+% plot(squeeze(Decs(T,:,:)),F,'.k');
+% hold on
+% plot(0,0,'+');
+% set(gca,'FontSize',fsize,'FontName','Helvetica')
+% set(gca,'TickDir','out')
+% set(gca,'ticklength',[0.01 0.01]/ax(3))
+% axis([-1, 1 -1 1]);
+% xlabel('Optimal decoder')
+% ylabel('F^T')
+% axis square
+% 
+% end
 
 
 
