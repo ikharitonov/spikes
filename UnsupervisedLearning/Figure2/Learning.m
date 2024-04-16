@@ -1,4 +1,4 @@
-function [Fs,Cs,F,C,Decs, ErrorC]=Learning(dt,lambda,epsr,epsf,alpha, beta, mu, Nneuron,Nx, Thresh,F,C)
+function [Fs,Cs,F,C,Decs,ErrorC,Inputs,InputL,InputTs]=Learning(dt,lambda,epsr,epsf,alpha, beta, mu, Nneuron,Nx, Thresh,F,C)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -63,6 +63,8 @@ sigma=abs(30); %std of the smoothing kernel
 w=(1/(sigma*sqrt(2*pi)))* exp(-(([1:1000]-500).^2)/(2*sigma.^2));%gaussian smoothing kernel used to smooth the input
 w=w/sum(w); % normalization oof the kernel
 
+Inputs=zeros(T,Nx,Ntime);
+
 
 j=1; % index of the (2^j)-time step (exponential times)
 l=1;
@@ -79,6 +81,7 @@ for i=2:TotTime
     if (mod(i,2^j)==0) %registering ther weights on an exponential time scale 2^j
         Cs(j,:,:)=C;   %registering the recurrent weights
         Fs(j,:,:)=F;   %registering the Feedfoward weights
+        Inputs(j,:,:)=Input;
         j=j+1;
     end
     
@@ -86,8 +89,9 @@ for i=2:TotTime
         Input=(mvnrnd(zeros(1,Nx),eye(Nx),Ntime))'; %generating a new sequence of input which a gaussion vector
         for d=1:Nx
             Input(d,:)=A*conv(Input(d,:),w,'same'); %smoothing the previously generated white noise with the gaussian window w
-        end     
+        end
     end
+
     
     V=(1-lambda*dt)*V + dt*F'*Input(:,mod(i,Ntime)+1)+ O*C(:,k)+0.001*randn(Nneuron,1); %the membrane potential is a leaky integration of the feedforward input and the spikes
     x=(1-lambda*dt)*x+dt*Input(:,mod(i,Ntime)+1); %filtered input
@@ -179,12 +183,16 @@ xT=zeros(Nx,TimeT);%target ouput
 
 Trials=10; %number of trials
 
+InputTs=zeros(Trials,Nx,TimeT);
+
 for r=1:Trials %for each trial
     InputT=A*(mvnrnd(zeros(1,Nx),eye(Nx),TimeT))'; % we genrate a new input
     
     for k=1:Nx
         InputT(k,:)=conv(InputT(k,:),w,'same'); % we wmooth it
     end
+
+    InputTs(r,:,:)=InputT;
     
     for t=2:TimeT      
         xT(:,t)= (1-lambda*dt)*xT(:,t-1)+ dt*InputT(:,t-1); % ans we comput the target output by leaky inegration of the input       
