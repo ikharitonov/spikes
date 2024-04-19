@@ -1,4 +1,4 @@
-function [Fs,Cs,F,C,Decs,ErrorC,Inputs,InputL,InputTs]=twoDWhite(Nneuron,Nx,dt,lambda,epsr,epsf,alpha, beta, mu, Thresh, save_path)
+function [Fs,Cs,F,C,Decs,ErrorC,Inputs,InputL,InputTs]=twoDWhite(Nneuron,Nx,dt,lambda,epsr,epsf,alpha, beta, mu, Thresh, inputs_path, save_path)
 
 % Nneuron=20; % size of the population
 % Nx=2;       %dimesnion of the input
@@ -23,6 +23,6 @@ Ci=-0.2*(rand(Nneuron,Nneuron))-0.5*eye(Nneuron); %the initial recurrent conecti
 % Thresh=0.5; %vector of thresholds of the neurons
 
 
-[Fs,Cs,F,C,Decs,ErrorC,Inputs,InputL,InputTs]=Learning(dt,lambda,epsr,epsf,alpha, beta, mu, Nneuron,Nx, Thresh,Fi,Ci);
+[Fs,Cs,F,C,Decs,ErrorC,Inputs,InputL,InputTs]=Learning(dt,lambda,epsr,epsf,alpha, beta, mu, Nneuron,Nx, Thresh,Fi,Ci,inputs_path);
 
 save(save_path);

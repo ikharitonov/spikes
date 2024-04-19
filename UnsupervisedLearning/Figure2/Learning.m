@@ -1,4 +1,4 @@
-function [Fs,Cs,F,C,Decs,ErrorC,Inputs,InputL,InputTs]=Learning(dt,lambda,epsr,epsf,alpha, beta, mu, Nneuron,Nx, Thresh,F,C)
+function [Fs,Cs,F,C,Decs,ErrorC,Inputs,InputL,InputTs]=Learning(dt,lambda,epsr,epsf,alpha, beta, mu, Nneuron,Nx, Thresh,F,C,inputs_path)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -63,11 +63,14 @@ sigma=abs(30); %std of the smoothing kernel
 w=(1/(sigma*sqrt(2*pi)))* exp(-(([1:1000]-500).^2)/(2*sigma.^2));%gaussian smoothing kernel used to smooth the input
 w=w/sum(w); % normalization oof the kernel
 
-Inputs=zeros(T,Nx,Ntime);
+load(inputs_path)
+
+InputsToSave=zeros(T,Nx,Ntime);
 
 
 j=1; % index of the (2^j)-time step (exponential times)
 l=1;
+ii=1;
 
 fprintf('%d percent of the learning  completed\n',0)
  
@@ -81,18 +84,22 @@ for i=2:TotTime
     if (mod(i,2^j)==0) %registering ther weights on an exponential time scale 2^j
         Cs(j,:,:)=C;   %registering the recurrent weights
         Fs(j,:,:)=F;   %registering the Feedfoward weights
-        Inputs(j,:,:)=Input;
+        InputsToSave(j,:,:)=Inputs(j,:,:);
         j=j+1;
     end
     
-    if (mod(i-2,Ntime)==0) %Generating a new iput sequence every Ntime time steps 
-        Input=(mvnrnd(zeros(1,Nx),eye(Nx),Ntime))'; %generating a new sequence of input which a gaussion vector
-        for d=1:Nx
-            Input(d,:)=A*conv(Input(d,:),w,'same'); %smoothing the previously generated white noise with the gaussian window w
-        end
+    if (mod(i-2,Ntime)==0) %Generating a new iput sequence every Ntime time steps
+%         Input=(mvnrnd(zeros(1,Nx),eye(Nx),Ntime))'; %generating a new sequence of input which a gaussion vector
+        Input=squeeze(Inputs(ii,:,:));
+        ii=ii+1;
+%         for d=1:Nx
+%              Input(d,:)=A*conv(Input(d,:),w,'same'); %smoothing the previously generated white noise with the gaussian window w
+%         end
     end
 
     
+%     V=(1-lambda*dt)*V + dt*F'*reshape(Inputs(j,:,mod(i,Ntime)+1), [], 1)+ O*C(:,k)+0.001*randn(Nneuron,1); %the membrane potential is a leaky integration of the feedforward input and the spikes
+%     x=(1-lambda*dt)*x+dt*reshape(Inputs(j,:,mod(i,Ntime)+1), [], 1); %filtered input
     V=(1-lambda*dt)*V + dt*F'*Input(:,mod(i,Ntime)+1)+ O*C(:,k)+0.001*randn(Nneuron,1); %the membrane potential is a leaky integration of the feedforward input and the spikes
     x=(1-lambda*dt)*x+dt*Input(:,mod(i,Ntime)+1); %filtered input
          
@@ -135,11 +142,11 @@ fprintf('Computing optimal decoders\n')
 TimeL=50000; % size of the sequence  of the input that will be fed to neuron
 xL=zeros(Nx,TimeL); % the target output/input
 Decs=zeros(T,Nx,Nneuron);% array where the decoding weights for each instance of the network will be stocked
-InputL=0.3*A*(mvnrnd(zeros(1,Nx),eye(Nx),TimeL))'; %generating a new input sequence
+% InputL=0.3*A*(mvnrnd(zeros(1,Nx),eye(Nx),TimeL))'; %generating a new input sequence
 
-for k=1:Nx
-    InputL(k,:)=conv(InputL(k,:),w,'same'); %smoothing the input as before
-end
+% for k=1:Nx
+%     InputL(k,:)=conv(InputL(k,:),w,'same'); %smoothing the input as before
+% end
 
 for t=2:TimeL
     
@@ -183,23 +190,23 @@ xT=zeros(Nx,TimeT);%target ouput
 
 Trials=10; %number of trials
 
-InputTs=zeros(Trials,Nx,TimeT);
+% InputTs=zeros(Trials,Nx,TimeT);
 
 for r=1:Trials %for each trial
-    InputT=A*(mvnrnd(zeros(1,Nx),eye(Nx),TimeT))'; % we genrate a new input
+%     InputT=A*(mvnrnd(zeros(1,Nx),eye(Nx),TimeT))'; % we genrate a new input
     
-    for k=1:Nx
-        InputT(k,:)=conv(InputT(k,:),w,'same'); % we wmooth it
-    end
+%     for k=1:Nx
+%         InputT(k,:)=conv(InputT(k,:),w,'same'); % we wmooth it
+%     end
 
-    InputTs(r,:,:)=InputT;
+%     InputTs(r,:,:)=InputT;
     
     for t=2:TimeT      
-        xT(:,t)= (1-lambda*dt)*xT(:,t-1)+ dt*InputT(:,t-1); % ans we comput the target output by leaky inegration of the input       
+        xT(:,t)= (1-lambda*dt)*xT(:,t-1)+ dt*reshape(InputTs(r,:,t-1), [], 1); % ans we comput the target output by leaky inegration of the input       
     end    
     
     for i=1:T %for each instance of the network
-        [rOT, OT, VT] = runnet(dt, lambda, squeeze(Fs(i,:,:)) ,InputT, squeeze(Cs(i,:,:)),Nneuron,TimeT, Thresh);%we run the network with current input InputL
+        [rOT, OT, VT] = runnet(dt, lambda, squeeze(Fs(i,:,:)) ,squeeze(InputTs(r,:,:)), squeeze(Cs(i,:,:)),Nneuron,TimeT, Thresh);%we run the network with current input InputL
         
         xestc=squeeze(Decs(i,:,:))*rOT; %we deocode the ouptut using the optinal decoders previously computed
         Error(1,i)=Error(1,i)+sum(var(xT-xestc,0,2))/(sum(var(xT,0,2))*Trials);%we comput the variance of the error normalized by the variance of the target
